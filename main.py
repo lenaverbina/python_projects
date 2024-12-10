@@ -5,6 +5,7 @@
 
 from tkinter import *
 from tkinter import ttk
+from random import randrange
 
 player1_turn = True
 
@@ -45,6 +46,8 @@ def init_game():
     onObjectClick.game_board_matrix = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]]
     onObjectClick.end_game = False
     onObjectClick.moves = 0
+    if onObjectClick.player1_turn is False:
+        computer_click()
 
 
 def create_cross(canvas, coords):
@@ -118,38 +121,45 @@ def onObjectClick(event, canvas, lbl):
             create_cross(canvas, coords)
             onObjectClick.game_board_matrix[i][j] = 1
             onObjectClick.player1_turn = False
-        else:
+            onObjectClick.moves += 1
+            #tag = canvas.gettags(item)[0]
+            canvas.itemconfig(item, fill="white")
+            gs = game_state(onObjectClick.game_board_matrix)
+            if gs != '':
+            # canvas.destroy() #можно поставить флаг, который деактивирует игру
+                lbl.config(text=gs)
+                onObjectClick.end_game = True
+        if onObjectClick.moves < 9:
+            item = randrange(1, 9)
+            i, j = matrix_index(item)
+            while onObjectClick.game_board_matrix[i][j] != -1:
+                item = randrange(1, 9)
+                i, j = matrix_index(item)
+            coords = canvas.coords(item)
+            print(coords)
             create_circle(canvas, coords)
             onObjectClick.game_board_matrix[i][j] = 0
             onObjectClick.player1_turn = True
-        onObjectClick.moves += 1
-        print("Количество ходов:", onObjectClick.moves)
-        print(coords)
-        print(onObjectClick.game_board_matrix)
-        # canvas.create_text(event.x, event.y, text="X")
-        # print(item)
-        # print(canvas.type(item))
-        tag = canvas.gettags(item)[0]
-        canvas.itemconfig(item, fill="white")
-        gs = game_state(onObjectClick.game_board_matrix)
-        if gs != '':
+            onObjectClick.moves += 1
+            gs = game_state(onObjectClick.game_board_matrix)
+            if gs != '':
             # canvas.destroy() #можно поставить флаг, который деактивирует игру
-            lbl.config(text=gs)
-            onObjectClick.end_game = True
-            # l.place(x=100, y=210, anchor='center')
-            # l.pack()
-        elif gs == '' and onObjectClick.moves == 9:
-            lbl.config(text="Ничья")
-            onObjectClick.end_game = True
+                lbl.config(text=gs)
+                onObjectClick.end_game = True
+        #tag = canvas.gettags(item)[0]
+            canvas.itemconfig(item, fill="white")
         else:
-            pass  # написать функцию инициализации новой игры
-        # l = ttk.Label(root, text="Ничья")
-        # l.pack()
-
-    # print(tag)
-    # i(fill="black")
-    # print(event.widget.find_closest(event.x, event.y))
-    # canvas.create_text(event.x, event.y, text="X")
+            if gs == '':
+                lbl.config(text="Ничья")
+                onObjectClick.end_game = True
+            else:
+                lbl.config(text=gs)
+                onObjectClick.end_game = True
+            #print("Количество ходов:", onObjectClick.moves)
+            print(coords)
+            print(onObjectClick.game_board_matrix)
+    else:
+        pass
 
 
 # Press the green button in the gutter to run the script.
